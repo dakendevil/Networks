@@ -1,0 +1,38 @@
+#include <stdio.h>
+ #include <string.h>
+ void xor(char *dividend, char *divisor, char *result) {
+    for (int i = 1; i < strlen(divisor); i++)
+        result[i - 1] = (dividend[i] == divisor[i]) ? '0' : '1';
+    result[strlen(divisor) - 1] = '\0';
+ }
+ void crc(char *data, char *key) {
+    int dataLen = strlen(data);
+    int keyLen = strlen(key);
+    char appendedData[100], temp[100], remainder[100];
+    strcpy(appendedData, data);
+    for (int i = 0; i < keyLen - 1; i++)
+        appendedData[dataLen + i] = '0';
+    appendedData[dataLen + keyLen - 1] = '\0';
+    strncpy(temp, appendedData, keyLen);
+    for (int i = 0; i < dataLen; i++) {
+        if (temp[0] == '1')
+            xor(temp, key, remainder);
+        else
+            xor(temp, "0000", remainder);
+        temp[keyLen - 1] = appendedData[i + keyLen];
+        temp[keyLen] = '\0';
+        strcpy(temp, remainder);
+    }
+    strcpy(remainder, temp);
+    printf("CRC code: %s\n", remainder);
+    printf("Transmitted data: %s%s\n", data, remainder);
+ }
+ int main() {
+    char data[50], key[50];
+    printf("Enter binary data: ");
+    scanf("%s", data);
+    printf("Enter generator polynomial: ");
+    scanf("%s", key);
+    crc(data, key);
+    return 0;
+ }
